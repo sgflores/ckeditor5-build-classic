@@ -4,7 +4,7 @@
  */
 
 // The editor creator to use.
-import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
+import DecoupledEditorBase from '@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor';
 
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
 import UploadAdapter from '@ckeditor/ckeditor5-adapter-ckfinder/src/uploadadapter';
@@ -31,10 +31,10 @@ import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
 
-export default class ClassicEditor extends ClassicEditorBase {}
+export default class DecoupledEditor extends DecoupledEditorBase {}
 
 // Plugins to include in the build.
-ClassicEditor.builtinPlugins = [
+DecoupledEditor.builtinPlugins = [
 	Essentials,
 	UploadAdapter,
 	Autoformat,
@@ -62,7 +62,7 @@ ClassicEditor.builtinPlugins = [
 ];
 
 // Editor configuration.
-ClassicEditor.defaultConfig = {
+DecoupledEditor.defaultConfig = {
 	toolbar: {
 		items: [
 			'heading',

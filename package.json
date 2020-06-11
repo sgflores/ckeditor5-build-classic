@@ -96,6 +96,7 @@
     }
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-editor-decoupled": "^19.0.1",
     "@ckeditor/ckeditor5-upload": "^19.0.1"
   }
 }
