@@ -1,7 +1,7 @@
 import DecoupledEditor from './config.js';
 
-import Position from  '@ckeditor/ckeditor5-engine/src/model/position.js';
-import Range from  '@ckeditor/ckeditor5-engine/src/model/range.js';
+// import Position from  '@ckeditor/ckeditor5-engine/src/model/position.js';
+// import Range from  '@ckeditor/ckeditor5-engine/src/model/range.js';
 
 window.DecoupledCKEditor = (() => {
     
