@@ -74,6 +74,8 @@
   },
   "scripts": {
     "build": "webpack --mode production",
+    "dev": "webpack --mode development",
+    "watch": "webpack --mode development --watch --info-verbosity verbose",
     "lint": "eslint --quiet '**/*.js'",
     "stylelint": "stylelint --quiet --allow-empty-input 'theme/**/*.css' 'docs/**/*.css'",
     "preversion": "npm run build; if [ -n \"$(git status src/ckeditor.js build/ --porcelain)\" ]; then git add -u src/ckeditor.js build/ && git commit -m 'Internal: Build.'; fi"
@@ -93,10 +95,13 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
-    }
+    } 
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-autosave": "^19.0.1",
     "@ckeditor/ckeditor5-editor-decoupled": "^19.0.1",
+    "@ckeditor/ckeditor5-engine": "^19.0.1",
+    "@ckeditor/ckeditor5-page-break": "^19.0.1",
     "@ckeditor/ckeditor5-upload": "^19.0.1"
   }
 }

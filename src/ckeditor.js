@@ -1,104 +1,165 @@
-/**
- * @license Copyright (c) 2003-2020, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
- */
+import DecoupledEditor from './config.js';
 
-// The editor creator to use.
-import DecoupledEditorBase from '@ckeditor/ckeditor5-editor-decoupled/src/decouplededitor';
+import Position from  '@ckeditor/ckeditor5-engine/src/model/position.js';
+import Range from  '@ckeditor/ckeditor5-engine/src/model/range.js';
 
-import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
-import UploadAdapter from '@ckeditor/ckeditor5-adapter-ckfinder/src/uploadadapter';
-import Autoformat from '@ckeditor/ckeditor5-autoformat/src/autoformat';
-import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
-import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
-import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
-import CKFinder from '@ckeditor/ckeditor5-ckfinder/src/ckfinder';
-import EasyImage from '@ckeditor/ckeditor5-easy-image/src/easyimage';
-import Heading from '@ckeditor/ckeditor5-heading/src/heading';
-import Image from '@ckeditor/ckeditor5-image/src/image';
-import ImageCaption from '@ckeditor/ckeditor5-image/src/imagecaption';
-import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle';
-import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar';
-import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload';
-import Indent from '@ckeditor/ckeditor5-indent/src/indent';
-import Link from '@ckeditor/ckeditor5-link/src/link';
-import List from '@ckeditor/ckeditor5-list/src/list';
-import MediaEmbed from '@ckeditor/ckeditor5-media-embed/src/mediaembed';
-import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
-import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
-import Table from '@ckeditor/ckeditor5-table/src/table';
-import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
-import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
-import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
+window.DecoupledCKEditor = (() => {
+    
+    const editors = {};
 
-export default class DecoupledEditor extends DecoupledEditorBase {}
+    return {
+        init(id, dotNetReference, apiURL) {
+            DecoupledEditor
+                .create(document.querySelector('.document-editor__editable'), {
+                    // simpleuploadadapter plugin
+                    simpleUpload: {
+                        // The URL that the images are uploaded to.
+                        uploadUrl: apiURL,
 
-// Plugins to include in the build.
-DecoupledEditor.builtinPlugins = [
-	Essentials,
-	UploadAdapter,
-	Autoformat,
-	Bold,
-	Italic,
-	BlockQuote,
-	CKFinder,
-	EasyImage,
-	Heading,
-	Image,
-	ImageCaption,
-	ImageStyle,
-	ImageToolbar,
-	ImageUpload,
-	Indent,
-	Link,
-	List,
-	MediaEmbed,
-	Paragraph,
-	PasteFromOffice,
-	Table,
-	TableToolbar,
-	TextTransformation,
-	SimpleUploadAdapter
-];
+                        // Headers sent along with the XMLHttpRequest to the upload server.
+                        headers: {
 
-// Editor configuration.
-DecoupledEditor.defaultConfig = {
-	toolbar: {
-		items: [
-			'heading',
-			'|',
-			'bold',
-			'italic',
-			'link',
-			'bulletedList',
-			'numberedList',
-			'|',
-			'indent',
-			'outdent',
-			'|',
-			'imageUpload',
-			'blockQuote',
-			'insertTable',
-			'mediaEmbed',
-			'undo',
-			'redo'
-		]
-	},
-	image: {
-		toolbar: [
-			'imageStyle:full',
-			'imageStyle:side',
-			'|',
-			'imageTextAlternative'
-		]
-	},
-	table: {
-		contentToolbar: [
-			'tableColumn',
-			'tableRow',
-			'mergeTableCells'
-		]
-	},
-	// This value must be kept in sync with the language defined in webpack.config.js.
-	language: 'en'
-};
+                        }
+                    },
+                    // autosave plugin
+                    autosave: {
+                        waitingTime: 1000, // in ms
+                        save(editor) {
+
+                            var selectedSectionData = window.DecoupledCKEditor.getSelectedSectionData(editor);
+
+                            // console.log(selectedSectionData);
+
+                            /*if (!selectedSectionData.id) {
+                                return;
+                            }*/
+
+                            if (dotNetReference !== undefined) {
+                                dotNetReference.invokeMethodAsync('EditorDataChanged', selectedSectionData.id, selectedSectionData.data);
+                            }
+
+                            console.log('saving markdown...');
+                        }
+                    },
+                    // https://ckeditor.com/docs/ckeditor5/latest/builds/guides/faq.html
+                    // should allow all html elements but currently not working
+                    allowedContent: true,
+                })
+                .then(editor => {
+                    const toolbarContainer = document.querySelector('.document-editor__toolbar');
+
+                    toolbarContainer.appendChild(editor.ui.view.toolbar.element);
+
+                    editor = window.DecoupledCKEditor.allowElementsAndAttributes(editor);
+
+                    editor.model.document.on('change:data', () => {
+
+                        var data = editor.getData();
+
+                        // console.log(data);
+
+                    });
+
+                    // editor.setData("<div id='xxx'> xxx <p id='yyy'> yyy</p></div>");
+
+                    editors[id] = editor;
+
+                    // console.log(editors);
+
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        },
+        allowElementsAndAttributes(editor) {
+
+            // ref: https://ckeditor.com/docs/ckeditor5/latest/api/module_engine_conversion_conversion-Conversion.html#function-attributeToAttribute
+            // ref: https://github.com/ckeditor/ckeditor5/issues/1314
+            // ref: https://ckeditor.com/docs/ckeditor5/latest/framework/guides/deep-dive/schema.html
+
+            // add element in schema.
+            let allowedElements = [
+                'div', 'span',
+            ];
+            // allow attributes in schema
+            let allowedAttributes = [
+                'id', 'class', 'title', 'style'
+            ];
+            allowedElements.forEach(function (el) {
+                editor.model.schema.register(el, {
+                    /*inheritAllFrom: el == 'templatecontentsection' ? ['$root'] : ['$block'],
+                    allowContentOf: ['$text'],
+                    isBlock: el == 'templatecontentsection' ? true : false*/
+                    allowWhere: '$block',
+                    allowContentOf: '$root',
+                });
+                // convert elements
+                editor.conversion.elementToElement({ model: el, view: el });
+
+                // convert elements
+                editor.conversion.elementToElement({ model: el, view: el });
+                // allow attributes
+                editor.model.schema.extend(el, { allowAttributes: allowedAttributes });
+
+                allowedAttributes.forEach(function (attr) {
+                    // convert attributes
+                    editor.conversion.attributeToAttribute({ model: { name: el, key: attr }, view: attr });
+                });
+
+            });
+
+            // CKEditor's generic items
+            // var genericItems = ['$root', '$block', '$text'];
+            // var definitions = editor.model.schema.getDefinitions();
+            console.log(editor.model.schema);
+
+            return editor;
+
+        },
+        setData(id, dotNetReference, data) {
+            // console.log(editors[id]);
+            editors[id].setData(data);
+            // console.log(editors[id].getData());
+        },
+        getData(id, dotNetReference, data) {
+            // console.log(editors[id].getData());
+            return editors[id].getData();
+        },
+        getSelectedSectionData(editor) {
+            var data = editor.getData();
+            // console.log(data);
+            // console.log(data.split('id'));
+            // @DecoupledEditor.razor
+            document.getElementById('markdownPreview').innerHTML = data;
+
+            // console.log(editor.model);
+            var selection = editor.model.document.selection.getFirstPosition();
+            var position = selection.path.length >= 0 ? selection.path[0] : 0;
+            var nodes = selection.root._children._nodes;
+            var node = nodes[position];
+            var attributeId = node.getAttribute('id');
+            // Position.createAt(pos.parent);
+
+            console.log(node.toJSON());
+
+            console.log('position: ', position);
+            console.log('id: ', attributeId);
+            console.log('node; ', node);
+            // @DecoupledEditor.razor
+            data = document.getElementById(attributeId) ? document.getElementById(attributeId) : data;
+
+            // console.log({data: document.getElementById(attributeId)});
+            // console.log(data);
+
+            return {
+                id: data.id ? data.id : '',
+                data: data.innerHTML ? data.innerHTML : data
+            };
+        },
+        destroy(id) {
+            editors[id].destroy()
+                .then(() => delete editors[id])
+                .catch(error => console.log(error));
+        }
+    };
+})();
