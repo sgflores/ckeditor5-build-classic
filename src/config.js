@@ -24,15 +24,25 @@ import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
 import List from '@ckeditor/ckeditor5-list/src/list';
-import MediaEmbed from '@ckeditor/ckeditor5-media-embed/src/mediaembed';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
 import Table from '@ckeditor/ckeditor5-table/src/table';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
+import TableProperties from '@ckeditor/ckeditor5-table/src/tableproperties';
+import TableCellProperties from '@ckeditor/ckeditor5-table/src/tablecellproperties';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
 import AutoSave from '@ckeditor/ckeditor5-autosave/src/autosave';
 import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
+import Font from '@ckeditor/ckeditor5-font/src/font';
+import Highlight from '@ckeditor/ckeditor5-highlight/src/highlight';
+import HorizontalLine from '@ckeditor/ckeditor5-horizontal-line/src/horizontalline';
+// Core plugin that provides the API for the management of special characters and their categories.
+import SpecialCharacters from '@ckeditor/ckeditor5-special-characters/src/specialcharacters';
+// A plugin that combines a basic set of special characters.
+import SpecialCharactersEssentials from '@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials';
+import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
+import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
 
 export default class DecoupledEditor extends DecoupledEditorBase {}
 
@@ -56,15 +66,23 @@ DecoupledEditor.builtinPlugins = [
 	IndentBlock,
 	Link,
 	List,
-	MediaEmbed,
 	Paragraph,
 	PasteFromOffice,
 	Table,
 	TableToolbar,
+	TableProperties, 
+	TableCellProperties,
 	TextTransformation,
 	SimpleUploadAdapter,
 	AutoSave,
 	PageBreak,
+	Font,
+	Highlight,
+	HorizontalLine,
+	SpecialCharacters, 
+	SpecialCharactersEssentials,
+	Alignment,
+	WordCount,
 ];
 
 // Editor configuration.
@@ -73,19 +91,24 @@ DecoupledEditor.defaultConfig = {
 		items: [
 			'heading',
 			'|',
+			'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight',
+			'|',
 			'bold',
 			'italic',
 			'link',
 			'bulletedList',
 			'numberedList',
 			'|',
+			'horizontalLine',
+			'specialCharacters',
+			'|',
+			'alignment',
 			'indent',
 			'outdent',
 			'|',
 			'imageUpload',
 			'blockQuote',
 			'insertTable',
-			'mediaEmbed',
 			'undo',
 			'redo',
 			'|',
@@ -95,17 +118,49 @@ DecoupledEditor.defaultConfig = {
 	image: {
 		toolbar: [
 			'imageStyle:full',
-			'imageStyle:side',
+			'imageStyle:alignLeft',
+			'imageStyle:alignRight',
 			'|',
 			'imageTextAlternative'
+		],
+		styles: [
+			// This option is equal to a situation where no style is applied.
+			'full',
+
+			// This represents an image aligned to the left.
+			'alignLeft',
+
+			// This represents an image aligned to the right.
+			'alignRight'
 		]
 	},
 	table: {
 		contentToolbar: [
 			'tableColumn',
 			'tableRow',
-			'mergeTableCells'
-		]
+			'mergeTableCells',
+			'tableProperties', 
+			'tableCellProperties'
+		],
+		// Configuration of the TableProperties plugin.
+		tableProperties: {
+			// ...
+		},
+		// Configuration of the TableCellProperties plugin.
+		tableCellProperties: {
+			// ...
+		}
+	},
+	fontSize: {
+		options: [
+			9,
+			11,
+			13,
+			'default',
+			17,
+			19,
+			21
+		],
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'en',

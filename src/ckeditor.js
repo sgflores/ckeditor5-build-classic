@@ -1,14 +1,11 @@
 import DecoupledEditor from './config.js';
 
-// import Position from  '@ckeditor/ckeditor5-engine/src/model/position.js';
-// import Range from  '@ckeditor/ckeditor5-engine/src/model/range.js';
-
 window.DecoupledCKEditor = (() => {
     
     const editors = {};
 
     return {
-        init(id, dotNetReference, apiURL) {
+        init(id, dotNetReference, apiURL, isReadOnly) {
             DecoupledEditor
                 .create(document.querySelector('.document-editor__editable'), {
                     // simpleuploadadapter plugin
@@ -30,10 +27,6 @@ window.DecoupledCKEditor = (() => {
 
                             // console.log(selectedSectionData);
 
-                            /*if (!selectedSectionData.id) {
-                                return;
-                            }*/
-
                             if (dotNetReference !== undefined) {
                                 dotNetReference.invokeMethodAsync('EditorDataChanged', selectedSectionData.id, selectedSectionData.data);
                             }
@@ -41,26 +34,34 @@ window.DecoupledCKEditor = (() => {
                             console.log('saving markdown...');
                         }
                     },
-                    // https://ckeditor.com/docs/ckeditor5/latest/builds/guides/faq.html
-                    // should allow all html elements but currently not working
-                    allowedContent: true,
                 })
                 .then(editor => {
                     const toolbarContainer = document.querySelector('.document-editor__toolbar');
 
                     toolbarContainer.appendChild(editor.ui.view.toolbar.element);
 
+                    const wordCountPlugin = editor.plugins.get( 'WordCount' );
+                    const wordCountWrapper = document.getElementById( 'word-count' );
+            
+                    wordCountWrapper.appendChild( wordCountPlugin.wordCountContainer );
+
                     editor = window.DecoupledCKEditor.allowElementsAndAttributes(editor);
+
+                    editor.isReadOnly = isReadOnly;
 
                     editor.model.document.on('change:data', () => {
 
-                        var data = editor.getData();
+                        // var data = editor.getData();
 
                         // console.log(data);
 
                     });
 
-                    // editor.setData("<div id='xxx'> xxx <p id='yyy'> yyy</p></div>");
+                    // editor.setData("<div class='section_xxx'> xxx <p> test 123 yyy</p> test lll</div><div class='section_xxx'></div><div class='section_yyy'> this is yyy</div><div class='section_123'>span here</div>");
+
+                    // var data = editor.getData();
+
+                    // console.log(data.match('<div class="section_xxx">' + "(.*)" + '</div><div class="section_xxx">'));
 
                     editors[id] = editor;
 
@@ -127,33 +128,29 @@ window.DecoupledCKEditor = (() => {
         },
         getSelectedSectionData(editor) {
             var data = editor.getData();
-            // console.log(data);
-            // console.log(data.split('id'));
-            // @DecoupledEditor.razor
-            document.getElementById('markdownPreview').innerHTML = data;
 
+            // console.log(data);
+            
             // console.log(editor.model);
             var selection = editor.model.document.selection.getFirstPosition();
             var position = selection.path.length >= 0 ? selection.path[0] : 0;
             var nodes = selection.root._children._nodes;
             var node = nodes[position];
-            var attributeId = node.getAttribute('id');
-            // Position.createAt(pos.parent);
+            var classId = node.getAttribute('class');
 
-            console.log(node.toJSON());
+            console.log('classId: ', classId);
+            
+            var locator = '<div class="'+classId+'">';
+            var currentSection = data.match(locator + "(.*)" + '</div>' + locator);
 
-            console.log('position: ', position);
-            console.log('id: ', attributeId);
-            console.log('node; ', node);
-            // @DecoupledEditor.razor
-            data = document.getElementById(attributeId) ? document.getElementById(attributeId) : data;
+            console.log('currentSection: ', currentSection);
+            // console.log('regEx: ', locator + "(.*)" + '</div>' + locator);
 
-            // console.log({data: document.getElementById(attributeId)});
             // console.log(data);
 
             return {
-                id: data.id ? data.id : '',
-                data: data.innerHTML ? data.innerHTML : data
+                id: classId,
+                data: currentSection !== null ? currentSection[1] : data
             };
         },
         destroy(id) {

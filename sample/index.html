@@ -153,13 +153,15 @@
     </div>
 </div>
 
+<div id="word-count"></div>
+
 <div hidden id="markdownPreview"></div>
 <button class="btn" onclick="PrintElement('markdownPreview')"> Preview </button>
 
 <script src="../build/ckeditor.js"></script>
 <script>
     // from ckeditor.js
-    DecoupledCKEditor.init(1);
+    DecoupledCKEditor.init(1, undefined, null, true);
 </script>
 
 <script>
