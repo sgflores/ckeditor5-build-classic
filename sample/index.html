@@ -4,10 +4,6 @@
 	<meta charset="utf-8">
 	<title>CKEditor 5 – classic editor build – development sample</title>
 	<style>
-		body {
-			max-width: 800px;
-			margin: 20px auto;
-		}
             
         /*Begin with the styles of the main container:*/
         .document-editor {
@@ -138,6 +134,20 @@
             margin-left: calc( 2 * var(--ck-spacing-large) );
             margin-right: calc( 2 * var(--ck-spacing-large) );
         }
+
+        /*refer to ProposalSharedService@RecursiveLoadMarkdownValuesFromContents for classId locators*/
+        div[class^="section_start_"] {
+            background-color: #f7f7f7;
+        }
+        div[class^="section_end_"] {
+            display: none;
+        }
+
+        /*image styles here...*/
+        .image {
+            /*display: none !important;*/
+        }
+
 	</style>
 </head>
 <body>
@@ -161,7 +171,14 @@
 <script src="../build/ckeditor.js"></script>
 <script>
     // from ckeditor.js
-    DecoupledCKEditor.init(1, undefined, null, true);
+    // init params = id, dotNetReference, apiURL, isReadOnly, isInDevelopment
+    DecoupledCKEditor.init(1, undefined, '/test/url', false, true);
+    var section1 = "<div class='section_start_one'><img src='../uploads/5e2ed833-2e13-4d22-b110-fa4344064a85.png' alt=''></div><div class='section_end_one'></div>";
+    var section2 = "<div class='section_start_two'> <p style='color:green;'> second div</p></div><div class='section_end_two'></div>";
+    var section3 = "<div class='section_start_three'><div style='background-image: url(../uploads/5e2ed833-2e13-4d22-b110-fa4344064a85.png);background-repeat: no-repeat;' title='Title'>This is the content</div></div><div class='section_end_three'></div>";
+    setTimeout(function() {
+        DecoupledCKEditor.setData(1, null, section1+section2+section3);
+    }, 1000);
 </script>
 
 <script>

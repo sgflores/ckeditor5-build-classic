@@ -16,10 +16,10 @@ import CKFinder from '@ckeditor/ckeditor5-ckfinder/src/ckfinder';
 import EasyImage from '@ckeditor/ckeditor5-easy-image/src/easyimage';
 import Heading from '@ckeditor/ckeditor5-heading/src/heading';
 import Image from '@ckeditor/ckeditor5-image/src/image';
-import ImageCaption from '@ckeditor/ckeditor5-image/src/imagecaption';
 import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle';
 import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar';
 import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload';
+import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
@@ -37,12 +37,19 @@ import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 import Font from '@ckeditor/ckeditor5-font/src/font';
 import Highlight from '@ckeditor/ckeditor5-highlight/src/highlight';
 import HorizontalLine from '@ckeditor/ckeditor5-horizontal-line/src/horizontalline';
-// Core plugin that provides the API for the management of special characters and their categories.
+// Core plugin that provides the API for the management of special characters and thir categories.
 import SpecialCharacters from '@ckeditor/ckeditor5-special-characters/src/specialcharacters';
 // A plugin that combines a basic set of special characters.
 import SpecialCharactersEssentials from '@ckeditor/ckeditor5-special-characters/src/specialcharactersessentials';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
+
+import BlockToolbar from '@ckeditor/ckeditor5-ui/src/toolbar/block/blocktoolbar';
+import HeadingButtonsUI from '@ckeditor/ckeditor5-heading/src/headingbuttonsui';
+import ParagraphButtonUI from '@ckeditor/ckeditor5-paragraph/src/paragraphbuttonui';
+
+// custom plugin
+import BackGroundImage from './background-image-plugin';
 
 export default class DecoupledEditor extends DecoupledEditorBase {}
 
@@ -58,10 +65,10 @@ DecoupledEditor.builtinPlugins = [
 	EasyImage,
 	Heading,
 	Image,
-	ImageCaption,
 	ImageStyle,
 	ImageToolbar,
 	ImageUpload,
+	ImageResize,
 	Indent,
 	IndentBlock,
 	Link,
@@ -83,6 +90,10 @@ DecoupledEditor.builtinPlugins = [
 	SpecialCharactersEssentials,
 	Alignment,
 	WordCount,
+	BlockToolbar, 
+	ParagraphButtonUI,
+	HeadingButtonsUI,
+	BackGroundImage,
 ];
 
 // Editor configuration.
@@ -107,21 +118,39 @@ DecoupledEditor.defaultConfig = {
 			'outdent',
 			'|',
 			'imageUpload',
+			'backgroundImage',
 			'blockQuote',
 			'insertTable',
 			'undo',
 			'redo',
 			'|',
 			'pageBreak',
-		]
+		],
+        shouldNotGroupWhenFull: true
+	},
+	blockToolbar: {
+		items: [
+			'paragraph', 'heading1', 'heading2', 'heading3',
+			'|',
+			'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight',
+			'|',
+			'bulletedList', 'numberedList',
+			'|',
+			'alignment',
+			'indent',
+			'outdent',
+			'|',
+			'blockQuote', 'imageUpload'
+		],
+		shouldNotGroupWhenFull: true
 	},
 	image: {
 		toolbar: [
 			'imageStyle:full',
 			'imageStyle:alignLeft',
 			'imageStyle:alignRight',
-			'|',
-			'imageTextAlternative'
+			/*'|',
+			'imageTextAlternative'*/
 		],
 		styles: [
 			// This option is equal to a situation where no style is applied.
