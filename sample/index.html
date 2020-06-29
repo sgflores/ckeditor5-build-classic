@@ -142,12 +142,6 @@
         div[class^="section_end_"] {
             display: none;
         }
-
-        /*image styles here...*/
-        .image {
-            /*display: none !important;*/
-        }
-
 	</style>
 </head>
 <body>
@@ -165,8 +159,7 @@
 
 <div id="word-count"></div>
 
-<div hidden id="markdownPreview"></div>
-<button class="btn" onclick="PrintElement('markdownPreview')"> Preview </button>
+<iframe hidden id="markdownPreview" srcdoc="" src="javascript:void(0)"></iframe>
 
 <script src="../build/ckeditor.js"></script>
 <script>
@@ -175,33 +168,10 @@
     DecoupledCKEditor.init(1, undefined, '/test/url', false, true);
     var section1 = "<div class='section_start_one'><img src='../uploads/5e2ed833-2e13-4d22-b110-fa4344064a85.png' alt=''></div><div class='section_end_one'></div>";
     var section2 = "<div class='section_start_two'> <p style='color:green;'> second div</p></div><div class='section_end_two'></div>";
-    var section3 = "<div class='section_start_three'><div style='background-image: url(../uploads/5e2ed833-2e13-4d22-b110-fa4344064a85.png);background-repeat: no-repeat;' title='Title'>This is the content</div></div><div class='section_end_three'></div>";
+    var section3 = "<div class='section_start_three'><div class='background-image' style='background-image: url(../uploads/5e2ed833-2e13-4d22-b110-fa4344064a85.png);background-repeat: no-repeat;' title='Title'>This is the content</div></div><div class='section_end_three'></div>";
     setTimeout(function() {
         DecoupledCKEditor.setData(1, null, section1+section2+section3);
     }, 1000);
 </script>
-
-<script>
-    function PrintElement(elem) {
-        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
-
-        mywindow.document.write('<html><head><title>' + document.title + '</title>');
-        mywindow.document.write('</head><body >');
-        mywindow.document.write('<h1>' + document.title + '</h1>');
-        mywindow.document.write(document.getElementById(elem).innerHTML);
-        mywindow.document.write('</body></html>');
-
-        console.log(document.getElementById(elem).innerHTML);
-
-        mywindow.document.close(); // necessary for IE >= 10
-        mywindow.focus(); // necessary for IE >= 10*/
-
-        mywindow.print();
-        // mywindow.close();
-
-        return true;
-    }
-</script>
-
 </body>
 </html>

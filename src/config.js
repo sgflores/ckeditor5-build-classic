@@ -49,7 +49,8 @@ import HeadingButtonsUI from '@ckeditor/ckeditor5-heading/src/headingbuttonsui';
 import ParagraphButtonUI from '@ckeditor/ckeditor5-paragraph/src/paragraphbuttonui';
 
 // custom plugin
-import BackGroundImage from './background-image-plugin';
+import BackGroundImage from './plugins/background-image-plugin';
+import Print from './plugins/print-plugin';
 
 export default class DecoupledEditor extends DecoupledEditorBase {}
 
@@ -93,13 +94,18 @@ DecoupledEditor.builtinPlugins = [
 	BlockToolbar, 
 	ParagraphButtonUI,
 	HeadingButtonsUI,
+
+	// custom plugins
 	BackGroundImage,
+	Print,
 ];
 
 // Editor configuration.
 DecoupledEditor.defaultConfig = {
 	toolbar: {
 		items: [
+			'print', // custom plugin @plugins/print-plugin.js
+			'|',
 			'heading',
 			'|',
 			'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight',
@@ -118,7 +124,7 @@ DecoupledEditor.defaultConfig = {
 			'outdent',
 			'|',
 			'imageUpload',
-			'backgroundImage',
+			'backgroundImage', // custom plugin @plugins/background-image-plugin.js
 			'blockQuote',
 			'insertTable',
 			'undo',
@@ -161,7 +167,8 @@ DecoupledEditor.defaultConfig = {
 
 			// This represents an image aligned to the right.
 			'alignRight'
-		]
+		],
+		resizeUnit: 'px',
 	},
 	table: {
 		contentToolbar: [

@@ -37,7 +37,7 @@ window.DecoupledCKEditor = (() => {
 
                                 console.log('saving markdown...');
                             }
-
+                            
                         }
                     },
                 })
